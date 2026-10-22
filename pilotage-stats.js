@@ -15,6 +15,7 @@ const tableLabels={interventions:'Retour d’intervention',consommations:'Consom
 function titreAction(r){
  const d=r.details||{},t=r.table_source,n=d.numero==null?'':String(d.numero),numero=n?' n°'+(/^\d+$/.test(n)?n.padStart(5,'0'):n):'',nom=d.libelle||d.personne||d.identifiant||'',cible=nom?' « '+nom+' »':'',verbe=r.action==='Création'?'enregistré':r.action==='Suppression'?'supprimé':'modifié';
  if(['Travail réalisé','Travail commencé'].includes(r.action))return r.action+cible;
+ if(t==='profils_utilisateurs'&&['Mot de passe défini','Compte supprimé','Compte désactivé','Compte réactivé'].includes(r.action))return r.action+cible;
  if(t==='interventions')return 'Retour d’intervention'+numero+' '+verbe;
  if(t==='materiels'||t==='menage_produits'){
   if(r.action==='Modification'&&d.stock_avant!=null&&d.stock_apres!=null&&d.stock_avant!==d.stock_apres)return 'Stock'+cible+' : '+d.stock_avant+' → '+d.stock_apres;
@@ -53,6 +54,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
 
 $('#modal').addEventListener('close',()=>{++suivi.detailEpoch;});
 setInterval(()=>{if(document.hidden||!state.profile||state.demo||suivi.loading||suivi.journalLoading||['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName))return;if(state.page==='actions'&&suivi.rows.length<=50)void chargerActions(false,true);if(state.page==='frequentation')void chargerSuivi(true);},15000);
+
 
 
 
