@@ -8,3 +8,16 @@
 .login-brand .brandmark{width:66px;height:66px;flex-basis:66px;border-radius:16px}
 .pilotage-footer-logo{display:block;flex-shrink:0;object-fit:contain;border-radius:5px}
 @media(max-width:520px){.login-brand .brandmark{width:56px;height:56px;flex-basis:56px}}
+
+
+/* Connexion épurée : logo et nom uniquement dans la colonne de gauche. */
+.login-brand{display:flex;align-items:center;justify-content:center;min-height:570px}
+.login-brand .brand{width:100%;flex-direction:column;justify-content:center;gap:14px;padding:0;text-align:center}
+.login-brand .brandmark{width:clamp(250px,25vw,340px);height:auto;aspect-ratio:1;flex:0 0 auto;background:transparent;border-radius:0;box-shadow:none;overflow:visible}
+.login-brand .brand strong{font-size:clamp(46px,4.5vw,68px);letter-spacing:2px;line-height:1.15}
+.login-brand .brand small{font-size:clamp(17px,1.65vw,24px);letter-spacing:5px;margin-top:14px;white-space:nowrap}
+.quick-card-compact{align-items:center;justify-content:center;gap:20px;min-height:0!important}
+.quick-card-compact>svg{margin:0;width:36px;height:36px}
+.quick-card-compact .btn{margin:0;align-self:center}
+@media(max-width:820px){.login{gap:28px}.login-brand{min-height:0}.login-brand .brand{gap:2px}.login-brand .brandmark{width:180px;height:180px;flex-basis:auto}.login-brand .brand strong{font-size:40px}.login-brand .brand small{font-size:14px;letter-spacing:4px;margin-top:9px}}
+@media(max-width:520px){.login{padding:28px 20px;gap:25px}.login-brand .brandmark{width:145px;height:145px;flex-basis:auto}.login-brand .brand strong{font-size:35px}.login-brand .brand small{font-size:12px;letter-spacing:3px}}
