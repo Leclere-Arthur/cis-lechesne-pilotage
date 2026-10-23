@@ -1,0 +1,11 @@
+.messages-application-liste{display:grid;gap:16px}
+.message-application-carte{padding:20px;border:1px solid var(--line);border-radius:14px;background:#101a29;min-width:0}
+.message-application-entete{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.message-application-entete h3{margin:0;font-size:17px;line-height:1.4;overflow-wrap:anywhere}
+.message-application-description{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.7;color:#b8c7dc;margin:15px 0 20px}
+.message-application-bas{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:#93a6c0;font-size:11px}
+.message-application-apercu h2{overflow-wrap:anywhere}
+.message-application-apercu>.btn{width:100%;margin-top:10px;min-height:46px}
+#message-application-form .field{margin-top:20px}
+#message-application-form .actions{flex-wrap:wrap}
+@media(max-width:820px){#message-application-form input,#message-application-form textarea{font-size:16px}.message-application-entete{flex-wrap:wrap}.message-application-bas>div{display:flex;gap:8px;flex-wrap:wrap}}
