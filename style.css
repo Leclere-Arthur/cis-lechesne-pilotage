@@ -21,3 +21,18 @@
 .quick-card-compact .btn{margin:0;align-self:center}
 @media(max-width:820px){.login{gap:28px}.login-brand{min-height:0}.login-brand .brand{gap:2px}.login-brand .brandmark{width:180px;height:180px;flex-basis:auto}.login-brand .brand strong{font-size:40px}.login-brand .brand small{font-size:14px;letter-spacing:4px;margin-top:9px}}
 @media(max-width:520px){.login{padding:28px 20px;gap:25px}.login-brand .brandmark{width:145px;height:145px;flex-basis:auto}.login-brand .brand strong{font-size:35px}.login-brand .brand small{font-size:12px;letter-spacing:3px}}
+
+
+/* Champs lisibles sur téléphone, sans zoom automatique à la saisie. */
+@media (max-width: 820px), (hover: none) and (pointer: coarse) {
+    #app input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]),
+    #app select,
+    #app textarea,
+    dialog input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]),
+    dialog select,
+    dialog textarea {
+        font-size: 16px !important;
+    }
+}
+/* Le logo de l'interface épouse le fond de chaque page. */
+.brandmark { background: transparent; }
