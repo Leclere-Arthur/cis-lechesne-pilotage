@@ -3,7 +3,7 @@ const suivi={toutHistorique:true,data:null,key:'',loading:false,error:'',user:''
 const suiviDate=d=>d?new Date(d).toLocaleString('fr-FR',{timeZone:'Europe/Paris',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'Aucune activité mesurée';
 function tempsActif(s){s=Math.max(0,Number(s)||0);if(s<60)return Math.round(s)+' s';return Math.floor(s/3600)+'h'+String(Math.floor(s%3600/60)).padStart(2,'0')}
 function suiviRange(){const {start,end}=periodRange();return {p_debut:start.toISOString(),p_fin:end.toISOString()}}
-function suiviKey(){const r=suiviRange();return state.profile.user_id+'|'+r.p_debut+'|'+r.p_fin+'|'+state.demo}
+function suiviKey(){const r=suiviRange();return state.profile.user_id+'|'+r.p_debut+'|'+r.p_fin+'|'+state.demo+'|'+(suivi.revision||0)}
 function suiviFiltres(){return `<div class="suivi-filters"><label class="field"><span>Du</span><input type="date" id="suivi-start" value="${esc(state.customStart||new Date(periodRange().start.getTime()-periodRange().start.getTimezoneOffset()*60000).toISOString().slice(0,10))}"></label><label class="field"><span>Au inclus</span><input type="date" id="suivi-end" value="${esc(state.customEnd||new Date(periodRange().end.getTime()-86400000-periodRange().end.getTimezoneOffset()*60000).toISOString().slice(0,10))}"></label><button class="btn" data-action="suivi-dates">Appliquer les dates</button><button class="btn btn-ghost" data-action="suivi-refresh">${icon('refresh')} Actualiser</button></div>`}
 async function chargerSuivi(force=false){const key=suiviKey();if(suivi.loading||!force&&suivi.key===key)return;suivi.loading=true;suivi.error='';if(suivi.key!==key)suivi.data=null;try{const data=state.demo?demoFrequentation():await rpc('pilotage_frequentation',suiviRange());if(!state.profile||suiviKey()!==key)return;suivi.data=data;suivi.key=key;}catch(e){if(state.profile&&suiviKey()===key){suivi.key=key;suivi.error=['PGRST202','42883'].includes(e.code)||/module Pilotage/.test(e.message)?'Installe le fichier statistiques-et-journal.sql dans Supabase pour activer ce suivi.':e.message||'Le suivi est momentanément indisponible.';}}finally{suivi.loading=false;if(state.profile&&['frequentation','actions'].includes(state.page))render()}}
 function frequentationPage(){const key=suiviKey();if(suivi.key!==key&&!suivi.loading)void chargerSuivi();const d=suivi.key===key?suivi.data:null;return suiviFiltres()+(suivi.error?`<div class="notice warn" role="alert">${esc(suivi.error)}</div>`:'')+(!d?(suivi.error?'<div class="empty">Le suivi sera visible après activation du module.</div>':'<div class="loading"><span class="spinner"></span>Chargement de la fréquentation…</div>'):frequentationHTML(d))}
@@ -54,6 +54,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
 
 $('#modal').addEventListener('close',()=>{++suivi.detailEpoch;});
 setInterval(()=>{if(document.hidden||!state.profile||state.demo||suivi.loading||suivi.journalLoading||['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName))return;if(state.page==='actions'&&suivi.rows.length<=50)void chargerActions(false,true);if(state.page==='frequentation')void chargerSuivi(true);},15000);
+
 
 
 

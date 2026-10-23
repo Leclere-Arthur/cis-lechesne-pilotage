@@ -22,7 +22,7 @@ function formulaireCompte(u=null,reprise=null){
 }
 function confirmerCompte(action,u,reprise=null){
  if(comptesPilotage.busy)return;const sup=action==='supprimer';
- modal(`<h2>${sup?'Supprimer le compte':u.actif?'Désactiver le compte':'Réactiver le compte'}</h2><p><strong>${esc(u.prenom+' '+u.nom)}</strong> · ${esc(u.identifiant)}</p>${sup?'<p>L’accès sera supprimé définitivement. Les anciens enregistrements restent conservés.</p>':''}<form id="compte-confirmation" data-id="${esc(u.id)}" data-cle="${reprise?.cle||createRequestId()}" data-action-compte="${action}" data-actif="${reprise?reprise.donnees.actif:!u.actif}">${sup?`<label class="field"><span>Retape l’identifiant pour confirmer</span><input name="confirmation" autocomplete="off" required data-attendu="${esc(u.identifiant)}"></label>`:''}<p class="form-error" id="compte-erreur" role="alert"></p><div class="actions"><button type="button" class="btn" data-action="close-modal">Annuler</button><button type="submit" class="btn ${sup?'compte-danger':'btn-primary'}">${sup?'Supprimer':u.actif?'Désactiver':'Réactiver'}</button></div></form>`);
+ modal(`<h2>${sup?'Supprimer le compte':u.actif?'Désactiver le compte':'Réactiver le compte'}</h2><p><strong>${esc(u.prenom+' '+u.nom)}</strong> · ${esc(u.identifiant)}</p>${sup?'<p>Le compte disparaîtra des listes et des statistiques. Les documents déjà enregistrés restent conservés.</p>':''}<form id="compte-confirmation" data-id="${esc(u.id)}" data-cle="${reprise?.cle||createRequestId()}" data-action-compte="${action}" data-actif="${reprise?reprise.donnees.actif:!u.actif}">${sup?`<label class="field"><span>Retape l’identifiant pour confirmer</span><input name="confirmation" autocomplete="off" required data-attendu="${esc(u.identifiant)}"></label>`:''}<p class="form-error" id="compte-erreur" role="alert"></p><div class="actions"><button type="button" class="btn" data-action="close-modal">Annuler</button><button type="submit" class="btn ${sup?'compte-danger':'btn-primary'}">${sup?'Supprimer':u.actif?'Désactiver':'Réactiver'}</button></div></form>`);
 }
 async function sessionComptes(force=false){
  const r=await sb.auth.getSession();if(r.error)throw r.error;let session=r.data?.session;
@@ -46,7 +46,11 @@ async function validerCompte(form){
   await appelerCompte(body);if(owner!==cleComptes())return;
   form.querySelectorAll('input[type=password]').forEach(e=>e.value='');closeModal();$('#modal').innerHTML='';
   toast(body.action==='creer'?'Compte créé.':body.action==='supprimer'?'Compte supprimé.':body.action==='etat'?(body.actif?'Compte réactivé.':'Compte désactivé.'):'Modifications enregistrées.');
-  comptesPilotage.loaded=false;state.recipients=null;await chargerComptes();void refreshData();
+  comptesPilotage.loaded=false;state.recipients=null;
+  // Invalide aussi les statistiques déjà ouvertes avant la suppression.
+  if(typeof suivi!=='undefined'){suivi.revision=(suivi.revision||0)+1;suivi.data=null;suivi.key='';suivi.rows=[];suivi.journalKey='';suivi.user='';suivi.details=null;++suivi.detailEpoch;}
+  if(typeof rapports!=='undefined'){rapports.data=null;rapports.key='';rapports.loading=false;++rapports.epoch;}
+  await chargerComptes();void refreshData();
   if(body.user_id===state.profile.user_id&&body.action==='modifier'){state.profile=await rpc('pilotage_session');render();}
  }catch(e){if(owner===cleComptes()&&$('#compte-erreur'))$('#compte-erreur').textContent=e.message||'Opération indisponible.';}
  finally{comptesPilotage.busy=false;form.querySelectorAll('input,button').forEach(e=>e.disabled=false);form.querySelectorAll('input:not([type=password])').forEach(e=>e.readOnly=true);}
@@ -57,3 +61,4 @@ document.addEventListener('click',e=>{const b=e.target.closest('button[data-comp
 $('#modal').addEventListener('cancel',e=>{if(comptesPilotage.busy)e.preventDefault();});
 $('#modal').addEventListener('close',()=>{if($('#compte-form')||$('#compte-confirmation'))$('#modal').innerHTML='';});
 if(sb)sb.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){if($('#compte-form')||$('#compte-confirmation')){closeModal();$('#modal').innerHTML='';}comptesPilotage.loaded=false;comptesPilotage.rows=[];comptesPilotage.reprises=[];++comptesPilotage.epoch;}});
+
